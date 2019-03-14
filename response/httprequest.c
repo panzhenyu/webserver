@@ -2,6 +2,7 @@
 #include "bufferedreader.h"
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 /* find first character ch from s
    return 0 if s doesn't contain ch */
