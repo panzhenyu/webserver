@@ -9,6 +9,7 @@
         "time.h": "c",
         "sched.h": "c",
         "clientbuffer.h": "c",
-        "httpresponse.h": "c"
+        "httpresponse.h": "c",
+        "unistd.h": "c"
     }
 }
