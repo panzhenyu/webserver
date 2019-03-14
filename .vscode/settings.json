@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "internet.h": "c",
+        "socket.h": "c",
+        "types.h": "c",
+        "netdb.h": "c",
+        "stdio.h": "c",
+        "pthread.h": "c",
+        "time.h": "c",
+        "sched.h": "c",
+        "clientbuffer.h": "c",
+        "httpresponse.h": "c"
+    }
+}
