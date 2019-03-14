@@ -1,8 +1,11 @@
 BUILD_DIR = ./build
-OBJS = $(BUILD_DIR)/server.o $(BUILD_DIR)/pool.o $(BUILD_DIR)/clientbuffer.o $(BUILD_DIR)/internet.o $(BUILD_DIR)/httpresponse.o $(BUILD_DIR)/httprequest.o
+OBJS = $(BUILD_DIR)/server.o $(BUILD_DIR)/pool.o $(BUILD_DIR)/clientbuffer.o $(BUILD_DIR)/internet.o $(BUILD_DIR)/httpresponse.o $(BUILD_DIR)/httprequest.o $(BUILD_DIR)/bufferedreader.o
 CC = gcc
 INCLUDES = ./include/*
 CFLAGS = -c -I ./include -lpthread
+
+$(BUILD_DIR)/server.o: response/server.c $(INCLUDES)
+	$(CC) $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/pool.o: utils/pool.c include/pool.h
 	$(CC) $(CFLAGS) $< -o $@
@@ -16,10 +19,10 @@ $(BUILD_DIR)/internet.o: connect/internet.c include/internet.h
 $(BUILD_DIR)/httpresponse.o: response/httpresponse.c include/httpresponse.h include/httprequest.h
 	$(CC) $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/httprequest.o: response/httprequest.c include/httprequest.h
+$(BUILD_DIR)/httprequest.o: response/httprequest.c include/httprequest.h include/bufferedreader.h
 	$(CC) $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/server.o: response/server.c $(INCLUDES)
+$(BUILD_DIR)/bufferedreader.o: utils/bufferedreader.c include/bufferedreader.h
 	$(CC) $(CFLAGS) $< -o $@
 
 server: $(OBJS)

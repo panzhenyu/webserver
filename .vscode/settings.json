@@ -10,6 +10,8 @@
         "sched.h": "c",
         "clientbuffer.h": "c",
         "httpresponse.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "fcntl.h": "c",
+        "bufferedreader.h": "c"
     }
 }

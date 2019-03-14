@@ -11,7 +11,7 @@
 #include <string.h>
 #define MAXLINE 4096
 
-void client_thread(void* args)
+void client_thread(const void* args)
 {
     int connfd;
     pthread_detach(pthread_self());

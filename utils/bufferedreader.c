@@ -8,6 +8,7 @@ void bufferedReader_init(struct BufferedReader* pbr, int fd)
 {
     pbr->fd = fd;
     pbr->pos = 0;
+    pbr->length = 0;
     pbr->buffsize = BUFFEREDREADER_BUFFSIZE;
 }
 
@@ -25,34 +26,56 @@ static int refill(struct BufferedReader* pbr)
 /* get next line from bufferedreader */
 char* bufferedReader_nextLine(struct BufferedReader* pbr)
 {
-    char* ret = NULL;
-    unsigned int oldlen, poslen = 0;
-    int pbr_oldpos;
-    if(pbr->length == 0 || pbr->pos == pbr->length - 1)
+    int statcode;
+    if(pbr->pos >= pbr->length)         // generally pbr->pos will nerver bigger than pbr->length, add a error handler must be better
     {
-        pbr_oldpos = refill(pbr);
-        switch (pbr_oldpos)
+        statcode = refill(pbr);
+        if(statcode == 0)
+            return NULL;
+        else if(statcode == -1)
         {
-            case -2:
-                return NULL;
-            case -1:
-                return NULL;                    // needs error handler
-            default:
-                break;
+            // needs error handler
+            return NULL;
         }
     }
 
-
+    char* ret = NULL;
     int pbrpos = pbr->pos;
+    unsigned int length = 0, increment = 0;
     while(pbr->buff[pbrpos++] != '\n')
     {
-        --pbr->rest_len;
-        if(pbr->rest_len == 0)
+        if(pbrpos == pbr->length)
         {
-            oldlen = poslen;
-            poslen += pbr->buffsize - pbr->pos;
-            ret = realloc(ret, poslen);                             // needs error handler
-            memcpy(ret[oldlen], pbr->buff[pbr->pos], )
+            increment = pbr->length - pbr->pos;
+            ret = realloc(ret, length + increment + 2);     // needs error handler
+            memcpy(ret + length, pbr->buff + pbr->pos, increment * sizeof(char));
+            length += increment;
+            statcode = refill(pbr);
+            if(statcode == 0 || statcode == -1)
+            {
+                ret[length] = '\n';
+                ret[length + 1] = '\0';
+                return ret;
+            }
+            else if(statcode == -1)
+            {
+                // needs error handler
+                ret[length] = '\n';
+                ret[length + 1] = '\0';
+                return ret;
+            }
+            pbrpos = 0;
         }
     }
+
+    increment = pbrpos - pbr->pos;
+    if(increment)
+    {
+        ret = realloc(ret, length + increment + 1);
+        memcpy(ret + length, pbr->buff + pbr->pos, increment * sizeof(char));
+        length += increment;
+        ret[length] = '\0';
+        pbr->pos = pbrpos;
+    }
+    return ret;
 }
