@@ -1,32 +1,22 @@
 #ifndef _HTTPREQUEST_H
 #define _HTTPREQUEST_H
 
+#include "httpconfig.h"
+#include "keyvaluelist.h"
+
 enum request_type
 {
     GET,
     POST
 };
 
-enum resource_type
-{
-    STATIC_RESOURCE,
-    DYNAMIC_RESOURCE
-};
-
-struct KeyValuePair
-{
-    char* key;
-    char* value;
-    struct KeyValuePair* next;
-};
-
 struct HttpRequest
 {
     enum request_type req;
     enum resource_type res;
+    enum protocol_type protocol;
     char* uri;
-    char* protocol;
-    struct KeyValuePair* kvset;     // the head node is empty
+    struct KeyValueNode* kvset;
 };
 
 void analyseHttpRequest(struct HttpRequest* phr, int connfd);

@@ -49,8 +49,15 @@ static void analyseLine(struct HttpRequest* phr, char* s)
     // get protocol
     s += p + 1;
     p = firstChar(s, '\r');
-    phr->protocol = (char*)malloc(sizeof(char) * p);    // needs error handler
-    memcpy(phr->protocol, s, p);
+    s[p] = '\0';
+    if(strcmp(s, "HTTP/1.1"))
+        phr->protocol = HTTP_1_1;
+    else if(strcmp(s, "HTTP/1.0"))
+        phr->protocol = HTTP_1_0;
+    else if(strcmp(s, "HTTP/2.0"))
+        phr->protocol = HTTP_2_0;
+    else
+        phr->protocol = UNKNOWN_PROTOCOL;
 }
 
 static void toLowerCase(char* s)
@@ -66,7 +73,7 @@ static void toLowerCase(char* s)
     }
 }
 
-static void analyseHead(struct KeyValuePair* pkv, char* s)
+static void analyseHead(struct KeyValueNode* pkv, char* s)
 {
     if(!pkv || !s)
         return;
@@ -87,8 +94,8 @@ static void analyseHead(struct KeyValuePair* pkv, char* s)
 
 static void httpRequest_init(struct HttpRequest* phr)
 {
-    phr->uri = phr->protocol = NULL;
-    phr->kvset = (struct KeyValuePair*)malloc(sizeof(struct KeyValuePair));     // needs error handler
+    phr->uri = NULL;
+    phr->kvset = (struct KeyValueNode*)malloc(sizeof(struct KeyValueNode));     // needs error handler
 }
 
 void analyseHttpRequest(struct HttpRequest* phr, int connfd)
@@ -101,11 +108,11 @@ void analyseHttpRequest(struct HttpRequest* phr, int connfd)
     char *p = bufferedReader_nextLine(&reader);
     analyseLine(phr, p);
 
-    struct KeyValuePair* pkv = phr->kvset;
+    struct KeyValueNode* pkv = phr->kvset;
     // end of httprequest, it would be blocked by read function from bufferedreader without strcmp
     while(strcmp(p = bufferedReader_nextLine(&reader), "\r\n"))
     {
-        pkv->next = (struct KeyValuePair*)malloc(sizeof(struct KeyValuePair));  // needs error handler
+        pkv->next = (struct KeyValueNode*)malloc(sizeof(struct KeyValueNode));  // needs error handler
         pkv = pkv->next;
         pkv->next = NULL;
         analyseHead(pkv, p);
@@ -122,7 +129,7 @@ const char* getRequestValueByKey(const struct HttpRequest* phr, const char* key)
     char* temp = (char*)malloc(strlen(key) * sizeof(char) + 1);
     strcpy(temp, key);
     toLowerCase(temp);
-    const struct KeyValuePair* pkv = phr->kvset->next;
+    const struct KeyValueNode* pkv = phr->kvset->next;
     while(pkv && strcmp(pkv->key, temp))
         pkv = pkv->next;
     free(temp);
@@ -159,8 +166,22 @@ void showHttpRequest(const struct HttpRequest* phr)
             break;
     }
     printf("uri: %s\n", phr->uri);
-    printf("protocol: %s\n", phr->protocol);
-    struct KeyValuePair* pkv = phr->kvset->next;    // skip the head node
+    switch(phr->protocol)
+    {
+        case HTTP_1_0:
+            printf("protocol: HTTP/1.0\n");
+            break;
+        case HTTP_1_1:
+            printf("protocol: HTTP/1.1\n");
+            break;
+        case HTTP_2_0:
+            printf("protocol: HTTP/2.0\n");
+            break;
+        default:
+            printf("protocol: unknown\n");
+            break;
+    }
+    struct KeyValueNode* pkv = phr->kvset->next;    // skip the head node
     while(pkv)
     {
         printf("%s: %s\n", pkv->key, pkv->value);

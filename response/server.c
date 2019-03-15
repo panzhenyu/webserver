@@ -18,7 +18,7 @@ void client_thread(const void* args)
     while(1)
     {
         connfd = buffer_remove((struct Buffer*)args);
-        HttpResponse(connfd);
+        httpResponse(connfd);
         close(connfd);
     }
 }

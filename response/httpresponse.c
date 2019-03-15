@@ -3,8 +3,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
-void HttpResponse(int connfd)
-{
+void httpResponse(int connfd)
+{   
     struct HttpRequest hr;
     analyseHttpRequest(&hr, connfd);
     showHttpRequest(&hr);
