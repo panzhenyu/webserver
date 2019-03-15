@@ -17,19 +17,20 @@ struct KeyValuePair
 {
     char* key;
     char* value;
+    struct KeyValuePair* next;
 };
 
 struct HttpRequest
 {
     enum request_type req;
     enum resource_type res;
-    int kvset_len;
     char* uri;
     char* protocol;
-    struct KeyValuePair* kvset;
+    struct KeyValuePair* kvset;     // the head node is empty
 };
 
 void analyseHttpRequest(struct HttpRequest* phr, int connfd);
-char* getRequestValueByKey(const struct HttpRequest* phr, const char* key);
+const char* getRequestValueByKey(const struct HttpRequest* phr, const char* key);
+void showHttpRequest(const struct HttpRequest* phr);
 
 #endif

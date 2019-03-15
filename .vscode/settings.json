@@ -12,6 +12,7 @@
         "httpresponse.h": "c",
         "unistd.h": "c",
         "fcntl.h": "c",
-        "bufferedreader.h": "c"
+        "bufferedreader.h": "c",
+        "pool.h": "c"
     }
 }
