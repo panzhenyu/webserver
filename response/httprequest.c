@@ -7,8 +7,23 @@
 #include <semaphore.h>
 #include <pthread.h>
 
-/* find first character ch from s
-   return 0 if s doesn't contain ch */
+void httpRequest_free(struct HttpRequest *hr)
+{
+    free(hr->uri);
+    struct KeyValueNode *t;
+    while(hr->kvset)
+    {
+        t = hr->kvset;
+        hr->kvset = hr->kvset->next;
+        free(t);
+    }
+}
+
+/*
+   find first character ch from s
+   return -1 if s doesn't contain ch
+   or return index of ch
+*/
 static int firstChar(const char* s, char ch)
 {
     if(!s)
@@ -17,13 +32,14 @@ static int firstChar(const char* s, char ch)
     for(p = s;*p != '\0';p++)
         if(*p == ch)
             return p - s;
-    return 0;
+    return -1;
 }
 
 static void analyseLine(struct HttpRequest* phr, char* s)
 {
     if(!phr || !s)
         return;
+    char *fs = s;
     int p = 0;
     phr->res = STATIC_RESOURCE;
 
@@ -35,19 +51,20 @@ static void analyseLine(struct HttpRequest* phr, char* s)
     else
     {
         phr->req = POST;
-        phr->res = STATIC_RESOURCE;
+        phr->res = DYNAMIC_RESOURCE;
     }
 
     // get uri
-    s += p + 1;
+    s = &s[p + 1];
     p = firstChar(s, ' ');
-    phr->uri = (char*)malloc(sizeof(char) * p);         // needs error handler
-    memcpy(phr->uri, s, p);
-    if(firstChar(phr->uri, '?'))
+    s[p] = '\0';
+    phr->uri = (char*)malloc(sizeof(char) * (p + 1));         // needs error handler
+    strcpy(phr->uri, s);
+    if(firstChar(phr->uri, '?') >= 0)
         phr->res = DYNAMIC_RESOURCE;
 
     // get protocol
-    s += p + 1;
+    s = &s[p + 1];
     p = firstChar(s, '\r');
     s[p] = '\0';
     if(strcmp(s, "HTTP/1.1"))
@@ -58,6 +75,7 @@ static void analyseLine(struct HttpRequest* phr, char* s)
         phr->protocol = HTTP_2_0;
     else
         phr->protocol = UNKNOWN_PROTOCOL;
+    free(fs);
 }
 
 static void toLowerCase(char* s)
@@ -90,6 +108,7 @@ static void analyseHead(struct KeyValueNode* pkv, char* s)
     pkv->value = (char*)malloc(sizeof(char) * len);     // needs error handler
     memcpy(pkv->value, s + idx, len - 1);
     pkv->value[len - 1] = '\0';
+    free(s);
 }
 
 static void httpRequest_init(struct HttpRequest* phr)
@@ -165,7 +184,7 @@ void showHttpRequest(const struct HttpRequest* phr)
             printf("resource-type: dynamic\n");
             break;
     }
-    printf("uri: %s\n", phr->uri);
+    printf("uri: %seof\n", phr->uri);
     switch(phr->protocol)
     {
         case HTTP_1_0:

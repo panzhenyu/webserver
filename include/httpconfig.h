@@ -15,4 +15,9 @@ enum resource_type
     DYNAMIC_RESOURCE
 };
 
+#define CONTENT_TYPE_HTML "text/html"
+#define CONTENT_TYPE_CSS 
+#define CONTENT_TYPE_JAVASCRIPT
+#define CONTENT_TYPE_IMAGE "image"
+
 #endif

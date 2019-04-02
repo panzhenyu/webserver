@@ -19,8 +19,9 @@ struct HttpRequest
     struct KeyValueNode* kvset;
 };
 
-void analyseHttpRequest(struct HttpRequest* phr, int connfd);
-const char* getRequestValueByKey(const struct HttpRequest* phr, const char* key);
-void showHttpRequest(const struct HttpRequest* phr);
+void httpRequest_free(struct HttpRequest *hr);
+void analyseHttpRequest(struct HttpRequest *phr, int connfd);
+const char* getRequestValueByKey(const struct HttpRequest *phr, const char *key);
+void showHttpRequest(const struct HttpRequest *phr);
 
 #endif

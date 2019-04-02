@@ -2,6 +2,7 @@
 #include "clientbuffer.h"
 #include "pool.h"
 #include "httpresponse.h"
+#include "router.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
@@ -43,6 +44,7 @@ int main(int argc, char* argv[])
         char client_hostname[MAXLINE], client_port[MAXLINE];
         buffer_init(&buff_clientfd);
         pool_init(&client_handlers, (void*)client_thread, (void*)&buff_clientfd, 5);
+        router_init();
         printf("server started\n");
         while(1)
         {

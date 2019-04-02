@@ -14,6 +14,10 @@
         "fcntl.h": "c",
         "bufferedreader.h": "c",
         "pool.h": "c",
-        "httprequest.h": "c"
+        "httprequest.h": "c",
+        "limits": "cpp",
+        "type_traits": "cpp",
+        "controller.h": "c",
+        "keyvaluelist.h": "c"
     }
 }

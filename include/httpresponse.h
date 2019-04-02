@@ -3,6 +3,7 @@
 
 #include "httpconfig.h"
 #include "keyvaluelist.h"
+#include <stdio.h>
 
 enum response_statecode
 {
@@ -16,22 +17,25 @@ enum response_statecode
 
 struct HttpResponseHeader
 {
+    enum protocol_type protocol;
+    enum response_statecode statecode;
     KeyValueList* kvl;
 };
 
 struct HttpResponseBody
 {
-    int fd;
+    FILE *fp;
+    char *msg;
+    unsigned long content_length;
 };
 
 struct HttpResponse
 {
-    enum protocol_type;
-    enum response_statecode;
     struct HttpResponseHeader header;
     struct HttpResponseBody body;
 };
 
+void httpResponse_free(struct HttpResponse *res);
 void httpResponse(int connfd);
 
 #endif

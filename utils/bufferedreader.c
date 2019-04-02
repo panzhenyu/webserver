@@ -1,7 +1,7 @@
 #include "bufferedreader.h"
-#include "string.h"
-#include "stdlib.h"
-#include "unistd.h"
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 /* init bufferedreader */
 void bufferedReader_init(struct BufferedReader* pbr, int fd)
