@@ -6,8 +6,8 @@
 struct BufferedReader
 {
     char buff[BUFFEREDREADER_BUFFSIZE];
-    int pos;
     int fd;
+    int pos;
     int length;
     int buffsize;
 };

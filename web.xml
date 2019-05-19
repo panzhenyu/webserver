@@ -1,0 +1,6 @@
+/ static static/index.html
+/a.png static static/a.png
+/a.php dynamic dynamic/a.php
+/favicon.ico static static/favicon.ico
+/test static static/test.html
+/error static static/asfewf

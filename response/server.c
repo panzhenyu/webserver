@@ -1,8 +1,8 @@
+#include "pool.h"
+#include "router.h"
 #include "internet.h"
 #include "clientbuffer.h"
-#include "pool.h"
 #include "httpresponse.h"
-#include "router.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netdb.h>
@@ -19,7 +19,9 @@ void client_thread(const void* args)
     while(1)
     {
         connfd = buffer_remove((struct Buffer*)args);
-        httpResponse(connfd);
+        printf("succeed to get connfd: %d\n");
+        response(connfd);
+        printf("succeed to respose connfd: %d\n", connfd);
         close(connfd);
     }
 }
@@ -44,13 +46,12 @@ int main(int argc, char* argv[])
         char client_hostname[MAXLINE], client_port[MAXLINE];
         buffer_init(&buff_clientfd);
         pool_init(&client_handlers, (void*)client_thread, (void*)&buff_clientfd, 5);
-        router_init();
         printf("server started\n");
         while(1)
         {
             connfd = accept(listenfd, &clientaddr, &clientlen);
             getnameinfo((const struct sockaddr*)&clientaddr, clientlen, client_hostname, MAXLINE, client_port, MAXLINE, 0);
-            printf("connected to (%s, %s)\n", client_hostname, client_port);
+            // printf("connected to (%s, %s)\n", client_hostname, client_port);
             buffer_insert(&buff_clientfd, connfd);
         }
         // maybe its not necessary to close

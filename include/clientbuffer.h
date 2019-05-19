@@ -2,7 +2,7 @@
 #define _CLIENTBUFFER_H
 
 #include <semaphore.h>
-#define BUFFER_MAXLEN 100000
+#define BUFFER_MAXLEN 10000
 
 struct Buffer
 {

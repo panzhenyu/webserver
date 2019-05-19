@@ -4,16 +4,9 @@
 #include "httpconfig.h"
 #include "keyvaluelist.h"
 
-enum request_type
-{
-    GET,
-    POST
-};
-
 struct HttpRequest
 {
-    enum request_type req;
-    enum resource_type res;
+    enum request_type method;
     enum protocol_type protocol;
     char* uri;
     struct KeyValueNode* kvset;

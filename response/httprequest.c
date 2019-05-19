@@ -41,18 +41,14 @@ static void analyseLine(struct HttpRequest* phr, char* s)
         return;
     char *fs = s;
     int p = 0;
-    phr->res = STATIC_RESOURCE;
 
     // get request method
     p = firstChar(s, ' ');
     s[p] = '\0';
     if(!strcmp(s, "GET"))
-        phr->req = GET;
+        phr->method = GET;
     else
-    {
-        phr->req = POST;
-        phr->res = DYNAMIC_RESOURCE;
-    }
+        phr->method = POST;
 
     // get uri
     s = &s[p + 1];
@@ -60,8 +56,6 @@ static void analyseLine(struct HttpRequest* phr, char* s)
     s[p] = '\0';
     phr->uri = (char*)malloc(sizeof(char) * (p + 1));         // needs error handler
     strcpy(phr->uri, s);
-    if(firstChar(phr->uri, '?') >= 0)
-        phr->res = DYNAMIC_RESOURCE;
 
     // get protocol
     s = &s[p + 1];
@@ -103,7 +97,8 @@ static void analyseHead(struct KeyValueNode* pkv, char* s)
     toLowerCase(pkv->key);
 
     idx++;
-    while(s[idx++] != ' ');
+    while(s[idx] == ' ')
+        idx++;
     int len = firstChar(s + idx, '\r') + 1;
     pkv->value = (char*)malloc(sizeof(char) * len);     // needs error handler
     memcpy(pkv->value, s + idx, len - 1);
@@ -166,22 +161,13 @@ void showHttpRequest(const struct HttpRequest* phr)
 {
     pthread_once(&pot, init_lock);
     sem_wait(&print_lock);
-    switch(phr->req)
+    switch(phr->method)
     {
         case GET:
             printf("request-method: GET\n");
             break;
         case POST:
             printf("request-method: POST\n");
-            break;
-    }
-    switch(phr->res)
-    {
-        case STATIC_RESOURCE:
-            printf("resource-type: static\n");
-            break;
-        case DYNAMIC_RESOURCE:
-            printf("resource-type: dynamic\n");
             break;
     }
     printf("uri: %seof\n", phr->uri);

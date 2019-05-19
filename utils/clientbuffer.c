@@ -37,4 +37,7 @@ void buffer_destroy(struct Buffer* pbuff)
         close(pbuff->buff[pbuff->head++]);
         pbuff->head %= BUFFER_MAXLEN;
     }
+    sem_destroy(&pbuff->lock);
+    sem_destroy(&pbuff->producer);
+    sem_destroy(&pbuff->consumer);
 }

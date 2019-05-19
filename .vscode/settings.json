@@ -18,6 +18,12 @@
         "limits": "cpp",
         "type_traits": "cpp",
         "controller.h": "c",
-        "keyvaluelist.h": "c"
+        "keyvaluelist.h": "c",
+        "select.h": "c",
+        "string.h": "c",
+        "bufferedwriter.h": "c",
+        "router.h": "c",
+        "httpconfig.h": "c",
+        "dlfcn.h": "c"
     }
 }

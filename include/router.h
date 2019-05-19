@@ -1,15 +1,14 @@
 #ifndef _ROUTER_H
 #define _ROUTER_H
 
-#include "keyvaluelist.h"
+#include "httpconfig.h"
 
-struct Router
-{
-    KeyValueList map;
+struct Map{
+	char pattern[255];
+	char type[255];
+	char path[255];
 };
 
-void router_init();
-const struct Router* getRouter();
-char* getRoute(const struct Router *router, char *uri);
+const struct Map* getRoute(const char * uri);
 
 #endif
